@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        #display {
+            width: 100%;
+            height: 50px;
+            font-size: 24px;
+            text-align: right;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #eaeaea;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #d1d1d1;
+        }
+
+        button.operation {
+            background-color: #ff7f50;
+            color: white;
+        }
+
+        button.operation:hover {
+            background-color: #ff6347;
+        }
+
+        button.clear {
+            background-color: #ff5c5c;
+            color: white;
+        }
+
+        button.clear:hover {
+            background-color: #e60000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <h1>Calculadora</h1>
+        <input type="text" id="display" disabled>
+        <div class="buttons">
+            <button class="clear">C</button>
+            <button class="operation">/</button>
+            <button class="operation">*</button>
+            <button class="operation">-</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="operation">+</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>0</button>
+            <button>.</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('button');
+        let currentInput = '';  // Almacena la expresión actual
+        let operatorPressed = false; // Verifica si un operador fue presionado
+        let resultDisplayed = false; // Verifica si se ha mostrado un resultado
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const value = this.textContent;
+
+                // Limpiar la calculadora
+                if (value === 'C') {
+                    currentInput = '';
+                    display.value = '';
+                    operatorPressed = false;
+                    resultDisplayed = false;
+                    return;
+                }
+
+                // Detectar operadores
+                if (['+', '-', '*', '/'].includes(value)) {
+                    if (currentInput && !operatorPressed) {
+                        currentInput += value; // Agregar el operador
+                        display.value = currentInput; // Mostrar el valor actual con operador
+                        operatorPressed = true; // Marcar que se presionó un operador
+                        resultDisplayed = false;
+                    }
+                    return;
+                }
+
+                // Realizar cálculo automáticamente cuando se ingrese un segundo número
+                if (!['+', '-', '*', '/'].includes(value)) {
+                    if (operatorPressed) {
+                        currentInput += value; // Añadir el segundo número
+                        display.value = currentInput;
+                        calculate(); // Calcular automáticamente al presionar el segundo número
+                        operatorPressed = false;
+                        resultDisplayed = true;
+                    } else if (resultDisplayed) {
+                        // Si ya se mostró un resultado y se presiona un número, iniciar una nueva operación
+                        currentInput = value;
+                        display.value = currentInput;
+                        resultDisplayed = false;
+                    } else {
+                        currentInput += value;
+                        display.value = currentInput;
+                    }
+                }
+            });
+        });
+
+        // Función para realizar el cálculo
+        function calculate() {
+            try {
+                currentInput = String(eval(currentInput)); // Evaluar expresión matemática
+                display.value = currentInput; // Mostrar resultado
+            } catch (error) {
+                display.value = 'Error';
+                currentInput = ''; // Limpiar en caso de error
+            }
+        }
+    </script>
+
+</body>
+</html>
